@@ -3,175 +3,239 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cars Volant – prototyp</title>
-<meta name="description" content="Vizuální prototyp webu Cars Volant podle master specifikace – hero, before/after scroll, konfigurátor sedadla, materiály, galerie, kontakt.">
+<title>Sedlář – dílna interiérů</title>
+<meta name="description" content="Prototyp webu dílny zakázkového čalounění autosedadel: proměna před/po, 3D konfigurátor sedadla, materiály, realizace a konzultace v Třebíči a Rumburku.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400&family=Manrope:wght@400;500&display=swap&subset=latin-ext" rel="stylesheet">
 <style>
+  /* Tokeny podle DESIGN.md */
   :root {
-    --bg: #0b0b0c;
-    --bg-2: #141416;
-    --line: #2a2a2e;
-    --text: #ece9e4;
-    --muted: #8d8a85;
-    --accent: #c8a46a;          /* champagne gold */
-    --accent-dim: #8a7148;
-    --radius: 14px;
-    --serif: "Cormorant Garamond", Georgia, serif;
-    --sans: "Inter", system-ui, sans-serif;
+    --canvas: #0e0d0c;
+    --surface: #161412;
+    --surface-raised: #1d1a17;
+    --hairline: #2a2622;
+    --hairline-strong: #3d3731;
+    --ink: #ece6dd;
+    --body: #c9c1b6;
+    --muted: #8f877c;
+    --muted-soft: #625b53;
+    --accent: #a8784a;
+    --error: #c0614f;
+    --display: "Manrope", system-ui, sans-serif;
+    --serif: "EB Garamond", Garamond, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+    --section: 140px;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { background: var(--canvas); color: var(--body); font-family: var(--serif); font-size: 18px; line-height: 1.6; overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }
-  button { font: inherit; color: inherit; cursor: pointer; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
-  .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--accent); }
-  h1, h2, h3 { font-family: var(--serif); font-weight: 500; line-height: 1.1; }
-  h2 { font-size: clamp(32px, 5vw, 52px); margin: 10px 0 16px; }
-  section { padding: 110px 0; border-top: 1px solid var(--line); }
-  .lead { color: var(--muted); max-width: 560px; }
-  .btn { display: inline-block; padding: 14px 26px; border: 1px solid var(--accent); border-radius: 999px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; background: transparent; transition: .25s; }
-  .btn:hover, .btn.solid { background: var(--accent); color: #111; }
-  .btn.solid:hover { background: #dcb97d; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; background: none; border: 0; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 768px) { .wrap { padding: 0 40px; } }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; color: var(--ink); text-transform: uppercase; }
+  h1 { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.05; letter-spacing: .05em; }
+  h2 { font-size: clamp(28px, 3.6vw, 44px); line-height: 1.1; letter-spacing: .05em; }
+  h3 { font-size: 18px; letter-spacing: .08em; line-height: 1.3; }
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .lead { font-size: 21px; line-height: 1.55; max-width: 34em; }
+  section { padding: var(--section) 0; }
+  .sec-head { display: grid; gap: 18px; max-width: 640px; margin-bottom: 56px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 48px; padding: 0 28px; border: 1px solid var(--ink); border-radius: 999px; font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink); transition: background .25s, color .25s, transform .12s; white-space: nowrap; }
+  .btn:hover { background: var(--ink); color: var(--canvas); }
+  .btn:active { transform: scale(.97); }
+  .btn.solid { background: var(--ink); color: var(--canvas); }
+  .btn.solid:hover { background: transparent; color: var(--ink); }
+  .btn.quiet { border-color: var(--hairline-strong); }
+  .btn[disabled] { opacity: .4; pointer-events: none; }
+
+  /* Skeleton (načítání renderů) */
+  .slot { position: relative; background: var(--surface); overflow: hidden; }
+  .slot::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, #ffffff08 50%, transparent 70%); background-size: 200% 100%; animation: shimmer 1.6s infinite linear; }
+  .slot.ready { background: transparent; }
+  .slot.ready::before { display: none; }
+  .slot img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s; }
+  .slot.ready img { opacity: 1; }
+  .slot .err { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; font-size: 15px; color: var(--muted); }
+  @keyframes shimmer { to { background-position: -200% 0; } }
 
   /* NAV */
-  nav { position: fixed; inset: 0 0 auto; z-index: 50; background: linear-gradient(#0b0b0cee, #0b0b0c00); }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
-  .logo { font-family: var(--serif); font-size: 24px; letter-spacing: .08em; }
-  .logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 28px; font-size: 13px; letter-spacing: .08em; color: var(--muted); }
-  .nav-links a:hover { color: var(--text); }
-  @media (max-width: 820px) { .nav-links { display: none; } }
+  nav { position: fixed; inset: 0 0 auto; z-index: 50; transition: background .3s; }
+  nav.solid { background: #0e0d0cf2; border-bottom: 1px solid var(--hairline); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 14px; color: var(--ink); }
+  .brand svg { width: 30px; height: 30px; flex: none; }
+  .brand b { font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: .42em; }
+  .nav-links { display: flex; gap: 32px; font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .nav-links a { transition: color .2s; }
+  .nav-links a:hover { color: var(--ink); }
+  nav .btn { height: 40px; padding: 0 20px; }
+  @media (max-width: 960px) { .nav-links { display: none; } }
+  @media (max-width: 480px) { nav .btn { display: none; } }
 
   /* HERO */
-  .hero { min-height: 100vh; display: grid; place-items: center; text-align: center; position: relative; border: 0; overflow: hidden;
-    background: radial-gradient(ellipse at 50% 70%, #2a2118 0%, #0b0b0c 60%); }
-  .hero::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 80px, #ffffff05 80px 81px); pointer-events: none; }
-  .hero h1 { font-size: clamp(44px, 8vw, 104px); margin: 18px 0 22px; }
-  .hero h1 em { font-style: italic; color: var(--accent); }
-  .hero p { color: var(--muted); max-width: 560px; margin: 0 auto 36px; }
-  .scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); font-size: 11px; letter-spacing: .3em; color: var(--muted); text-transform: uppercase; }
-  .scroll-hint::after { content: ""; display: block; width: 1px; height: 40px; background: var(--accent); margin: 10px auto 0; animation: drip 1.8s infinite; }
-  @keyframes drip { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  .hero { min-height: 100dvh; display: grid; align-items: center; padding: 96px 0 40px; }
+  .hero .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+  .hero-text { display: grid; gap: 28px; }
+  .hero-text p { font-size: 21px; max-width: 26em; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-render { aspect-ratio: 11 / 12; width: 100%; }
+  @media (max-width: 767px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero-render { order: -1; aspect-ratio: 1; max-height: 46vh; }
+  }
 
-  /* BEFORE / AFTER */
-  .ba { padding: 0; height: 300vh; position: relative; }
-  .ba-sticky { position: sticky; top: 0; height: 100vh; overflow: hidden; }
-  .ba-layer { position: absolute; inset: 0; display: grid; place-items: center; }
-  .ba-before { background: radial-gradient(ellipse at 50% 60%, #3a342c, #16140f 70%); }
-  .ba-after { background: radial-gradient(ellipse at 50% 60%, #2b2016, #0b0b0c 70%); clip-path: inset(0 100% 0 0); }
-  .ba-layer .seats { display: flex; gap: 4vw; height: 64vh; }
-  .ba-layer svg { height: 100%; width: auto; }
-  .ba-label { position: absolute; top: 96px; font-size: 12px; letter-spacing: .3em; text-transform: uppercase; }
-  .ba-before .ba-label { left: 32px; color: #b3a590; }
-  .ba-after .ba-label { right: 32px; color: var(--accent); }
-  .ba-divider { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); left: 0; box-shadow: 0 0 24px var(--accent); }
-  .ba-caption { position: absolute; bottom: 40px; left: 0; right: 0; text-align: center; }
-  .ba-caption h2 { font-size: clamp(26px, 4vw, 40px); margin: 0; }
-  .ba-caption p { color: var(--muted); font-size: 14px; }
+  /* PROMĚNA */
+  .ba { padding: 0; height: 280vh; position: relative; }
+  .ba-sticky { position: sticky; top: 0; height: 100dvh; overflow: hidden; display: grid; grid-template-rows: auto 1fr auto; padding: 96px 0 32px; }
+  .ba-top { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+  .ba-top p { max-width: 26em; }
+  .ba-stage { position: relative; margin: 24px 0; }
+  .ba-stage .slot { position: absolute; inset: 0; background: transparent; }
+  .ba-stage .slot img { object-fit: contain; }
+  .ba-after { clip-path: inset(0 100% 0 0); }
+  .ba-line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--ink); left: 0; opacity: 0; }
+  .ba-tags { display: flex; justify-content: space-between; }
+  .ba-range { display: none; width: 100%; accent-color: var(--accent); }
 
-  /* CONFIGURATOR */
-  .config { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; margin-top: 48px; }
-  @media (max-width: 900px) { .config { grid-template-columns: 1fr; } }
-  .stage { background: radial-gradient(circle at 50% 40%, #1f1c18, #0f0f10 70%); border: 1px solid var(--line); border-radius: var(--radius); aspect-ratio: 1 / 1.05; position: relative; display: grid; place-items: center; overflow: hidden; cursor: grab; }
-  .stage:active { cursor: grabbing; }
-  #seat-config { height: 86%; display: grid; place-items: center; }
-  .stage svg { height: 100%; width: auto; transition: transform .15s ease-out; }
-  .stage-hint { position: absolute; bottom: 14px; font-size: 11px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
-  .stage-tag { position: absolute; top: 14px; left: 16px; font-size: 11px; letter-spacing: .15em; color: var(--accent); text-transform: uppercase; }
-  .zoom-ctrl { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; }
-  .zoom-ctrl button { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: #0008; }
-  .panel h3 { font-family: var(--sans); font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin: 26px 0 12px; }
-  .panel h3:first-child { margin-top: 0; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; background: var(--bg-2); transition: .2s; }
-  .chip:hover { border-color: var(--accent-dim); }
-  .chip.on { border-color: var(--accent); color: var(--accent); }
-  .swatches { display: flex; flex-wrap: wrap; gap: 10px; }
-  .sw { width: 34px; height: 34px; border-radius: 50%; border: 2px solid transparent; outline: 1px solid var(--line); }
-  .sw.on { border-color: var(--bg); outline: 2px solid var(--accent); }
-  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-  input[type=text], input[type=email], input[type=date], select, textarea { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; color: var(--text); font: inherit; font-size: 14px; width: 100%; }
-  label.check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
-  .summary { margin-top: 28px; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .price { font-family: var(--serif); font-size: 34px; color: var(--accent); }
-  .price small { font-family: var(--sans); font-size: 12px; color: var(--muted); display: block; letter-spacing: .1em; }
-  .ai-upload { margin-top: 18px; padding: 16px; border: 1px dashed var(--line); border-radius: var(--radius); font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .badge { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #c8a46a22; color: var(--accent); }
+  /* KONFIGURÁTOR */
+  .config { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+  @media (max-width: 960px) { .config { grid-template-columns: 1fr; } }
+  .stage-col { position: sticky; top: 88px; }
+  @media (max-width: 960px) { .stage-col { position: static; } }
+  .stage { position: relative; aspect-ratio: 1 / 1; background: var(--canvas); touch-action: none; }
+  .stage canvas { width: 100% !important; height: 100% !important; display: block; cursor: grab; }
+  .stage canvas:active { cursor: grabbing; }
+  .stage .slot { position: absolute; inset: 0; }
+  .stage-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .views { display: flex; gap: 6px; flex-wrap: wrap; }
+  .views button { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding: 8px 14px; border: 1px solid var(--hairline); border-radius: 999px; transition: .2s; }
+  .views button:hover, .views button.on { color: var(--ink); border-color: var(--hairline-strong); }
+  .zone-note { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
 
-  /* MATERIALS */
-  .mats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 48px; }
-  @media (max-width: 900px) { .mats { grid-template-columns: repeat(2, 1fr); } }
-  .mat { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: var(--bg-2); }
-  .mat .tex { aspect-ratio: 1; transition: transform .6s ease; }
-  .mat:hover .tex { transform: scale(1.35); }
-  .mat .tex-wrap { overflow: hidden; }
-  .mat div.meta { padding: 16px; }
-  .mat h4 { font-family: var(--serif); font-size: 22px; font-weight: 500; }
-  .mat p { font-size: 13px; color: var(--muted); }
-  .tex.nappa { background: radial-gradient(circle at 30% 30%, #5a3a26, #2a1a10); box-shadow: inset 0 0 60px #0008; }
-  .tex.alcantara { background: #2c2c30; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  .tex.perf { background-color: #1a1a1c; background-image: radial-gradient(circle, #000 2px, transparent 2.5px); background-size: 14px 14px; }
-  .tex.diamond { background-color: #3a1512; background-image:
-      repeating-linear-gradient(45deg, transparent 0 22px, #c8a46a 22px 23px),
-      repeating-linear-gradient(-45deg, transparent 0 22px, #c8a46a 22px 23px); }
+  .panel { display: grid; }
+  .opt { padding: 22px 0; border-top: 1px solid var(--hairline); display: grid; gap: 14px; }
+  .opt:last-of-type { border-bottom: 1px solid var(--hairline); }
+  .opt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .opt-head span:last-child { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--body); text-transform: uppercase; text-align: right; }
+  .choices { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+  .choices button { font-family: var(--display); font-size: 14px; letter-spacing: .06em; color: var(--muted); padding: 6px 0; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+  .choices button:hover { color: var(--ink); }
+  .choices button.on { color: var(--ink); border-bottom-color: var(--accent); }
+  .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sw { width: 36px; height: 36px; border-radius: 50%; box-shadow: inset 0 0 0 1px #ffffff1a; transition: transform .15s; }
+  .sw:active { transform: scale(.92); }
+  .sw.on { outline: 1px solid var(--accent); outline-offset: 3px; }
+  .toggles { display: flex; gap: 24px; flex-wrap: wrap; font-size: 17px; }
+  .toggles label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+  .field { display: grid; gap: 8px; }
+  .field > span { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .field input, .field select, .field textarea { background: transparent; border: 0; border-bottom: 1px solid var(--hairline-strong); border-radius: 0; padding: 10px 0; font-size: 18px; color: var(--ink); width: 100%; transition: border-color .2s; }
+  .field select option { background: var(--surface); }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--ink); }
+  .field .msg { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--error); min-height: 1em; }
+  .field.bad input, .field.bad textarea { border-color: var(--error); }
+  .phase2 { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 22px 0; border-bottom: 1px solid var(--hairline); font-size: 16px; color: var(--muted); }
+  .phase2 p { max-width: 24em; }
+  .total { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; padding-top: 28px; }
+  .total .price { font-family: var(--display); font-size: 32px; color: var(--ink); letter-spacing: .02em; }
+  .total .row { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  /* GALLERY */
-  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 32px; }
-  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-  @media (max-width: 900px) { .gallery { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .gallery { grid-template-columns: 1fr; } }
-  .card { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg-2); transition: opacity .3s, transform .3s; }
-  .card.hide { display: none; }
-  .card .pair { display: grid; grid-template-columns: 1fr 1fr; height: 220px; }
-  .card .pair > div { display: grid; place-items: center; position: relative; }
-  .card .pair > div:first-child { background: #25221d; }
-  .card .pair > div:last-child { background: #151312; }
-  .card .pair svg { height: 180px; width: auto; }
-  .card .pair span { position: absolute; top: 8px; left: 10px; font-size: 10px; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
-  .card .meta { padding: 14px 16px; display: flex; justify-content: space-between; font-size: 14px; }
-  .card .meta em { color: var(--muted); font-style: normal; font-size: 12px; }
+  /* MATERIÁLY */
+  .mats { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 56px; align-items: center; }
+  @media (max-width: 767px) { .mats { grid-template-columns: 1fr; } }
+  .mat-list { display: grid; }
+  .mat-item { text-align: left; display: grid; grid-template-columns: 44px 1fr; gap: 4px 16px; padding: 22px 0; border-top: 1px solid var(--hairline); color: var(--muted); transition: color .2s; }
+  .mat-item:last-child { border-bottom: 1px solid var(--hairline); }
+  .mat-item .n { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; padding-top: 5px; }
+  .mat-item h3 { color: inherit; }
+  .mat-item p { grid-column: 2; font-size: 16px; max-height: 0; overflow: hidden; opacity: 0; transition: max-height .4s, opacity .4s; }
+  .mat-item.on { color: var(--ink); }
+  .mat-item.on .n { color: var(--accent); }
+  .mat-item.on p { max-height: 80px; opacity: 1; color: var(--body); }
+  .mat-view { aspect-ratio: 1; }
 
-  /* CONTACT */
-  .branches { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 16px; margin-top: 48px; }
-  @media (max-width: 900px) { .branches { grid-template-columns: 1fr; } }
-  .branch, .form { border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; background: var(--bg-2); }
-  .branch h3 { font-size: 30px; margin-bottom: 8px; }
-  .branch p { color: var(--muted); font-size: 14px; }
-  .map { height: 140px; border-radius: 10px; margin: 18px 0; background:
-      linear-gradient(#0000 49%, #2a2a2e 50%, #0000 51%) 0 0/40px 40px,
-      linear-gradient(90deg, #0000 49%, #2a2a2e 50%, #0000 51%) 0 0/40px 40px, #111113; position: relative; }
-  .map::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 8px #c8a46a33; transform: translate(-50%, -50%); }
-  .form { display: grid; gap: 12px; }
-  footer { padding: 40px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translate(-50%, 120px); background: var(--accent); color: #111; padding: 12px 22px; border-radius: 999px; font-size: 14px; transition: .35s; z-index: 99; }
-  .toast.show { transform: translate(-50%, 0); }
+  /* REALIZACE */
+  .filters { display: flex; gap: 4px 24px; flex-wrap: wrap; margin-bottom: 32px; }
+  .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .work { position: relative; display: grid; gap: 12px; }
+  .work .slot { aspect-ratio: 4 / 3; }
+  .work .slot img { position: absolute; inset: 0; object-fit: contain; }
+  .work .slot img.before { opacity: 0 !important; }
+  .work:hover .slot img.before, .work.show-before .slot img.before { opacity: 1 !important; }
+  .work.big { grid-column: span 2; grid-row: span 2; }
+  .work.big .slot { aspect-ratio: auto; height: 100%; min-height: 420px; }
+  .work .meta { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .work .meta h3 { font-size: 15px; }
+  .work .tag { position: absolute; top: 12px; left: 12px; z-index: 2; font-family: var(--mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); background: #0e0d0cb3; padding: 5px 10px; border-radius: 999px; }
+  .work.hide { display: none; }
+  .empty { display: none; padding: 60px 0; text-align: center; color: var(--muted); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+  @media (max-width: 960px) { .gallery { grid-template-columns: 1fr 1fr; } .work.big { grid-column: span 2; grid-row: auto; } .work.big .slot { min-height: 0; aspect-ratio: 4/3; } }
+  @media (max-width: 767px) { .gallery { grid-template-columns: 1fr; } .work.big { grid-column: auto; } }
+
+  /* KONTAKT */
+  .contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 64px; }
+  @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+  .branch { padding: 28px 0; border-top: 1px solid var(--hairline); display: grid; gap: 10px; }
+  .branch:last-child { border-bottom: 1px solid var(--hairline); }
+  .branch h3 { font-size: 22px; }
+  .branch dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 16px; font-size: 17px; }
+  .branch dt { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-top: 5px; }
+  form { display: grid; gap: 26px; background: var(--surface); padding: 40px; }
+  @media (max-width: 767px) { form { padding: 24px 16px; } }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+  .sent { display: none; padding: 40px 0; }
+  .sent h3 { margin-bottom: 12px; }
+
+  footer { border-top: 1px solid var(--hairline); padding: 40px 0 56px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: center; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, calc(100% + 40px)); visibility: hidden; background: var(--ink); color: var(--canvas); font-family: var(--mono); font-size: 12px; letter-spacing: .1em; padding: 12px 22px; border-radius: 999px; transition: transform .35s; z-index: 99; }
+  .toast.show { transform: translate(-50%, 0); visibility: visible; }
+
+  .reveal { opacity: 0; transform: translateY(12px); transition: opacity .6s, transform .6s; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .slot::before { animation: none; }
+    .ba { height: auto; }
+    .ba-sticky { position: relative; height: auto; min-height: 100dvh; }
+    .ba-range { display: block; }
+  }
 </style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
 </head>
 <body>
 
-<!-- Sdílené SVG definice: textury materiálů pro sedadla -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <pattern id="pat-perf" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="1.3" fill="#000" opacity=".55"/></pattern>
-    <pattern id="pat-diamond" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-      <path d="M0 0H18M0 0V18" stroke="#fff" stroke-opacity=".28" stroke-width="1" stroke-dasharray="3 2"/>
-    </pattern>
-    <pattern id="pat-stripes" width="100" height="16" patternUnits="userSpaceOnUse"><rect y="13" width="100" height="1.4" fill="#000" opacity=".45"/></pattern>
-    <filter id="f-suede"><feTurbulence baseFrequency=".85" numOctaves="2" result="n"/><feColorMatrix in="n" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0" result="m"/><feComposite in="m" in2="SourceGraphic" operator="in"/></filter>
-    <radialGradient id="g-sheen" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></radialGradient>
-  </defs>
-</svg>
-
-<nav>
+<nav id="nav">
   <div class="wrap">
-    <a class="logo" href="#top">CARS <span>VOLANT</span></a>
+    <a class="brand" href="#top" aria-label="Sedlář, úvod">
+      <!-- Pracovní logo: monogram S v prošitém kruhu -->
+      <svg viewBox="0 0 30 30" aria-hidden="true">
+        <circle cx="15" cy="15" r="14" fill="none" stroke="currentColor" stroke-width="1"/>
+        <circle cx="15" cy="15" r="11" fill="none" stroke="#a8784a" stroke-width=".8" stroke-dasharray="1.6 1.4"/>
+        <path d="M18.6 10.4c-.9-1-2.2-1.5-3.6-1.5-2 0-3.5 1.1-3.5 2.8 0 3.8 7.3 2.4 7.3 6.2 0 1.8-1.6 3.2-3.9 3.2-1.6 0-3-.7-3.9-1.8" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+      </svg>
+      <b>SEDLÁŘ</b>
+    </a>
     <div class="nav-links">
       <a href="#promena">Proměna</a>
       <a href="#konfigurator">Konfigurátor</a>
-      <a href="#remeslo">Řemeslo</a>
+      <a href="#materialy">Materiály</a>
       <a href="#realizace">Realizace</a>
       <a href="#kontakt">Kontakt</a>
     </div>
@@ -179,27 +243,41 @@
   </div>
 </nav>
 
+<main>
 <!-- 1 · HERO -->
 <header class="hero" id="top">
   <div class="wrap">
-    <div class="eyebrow">Třebíč · Rumburk</div>
-    <h1>Ručně šitý<br><em>luxus</em> na míru</h1>
-    <p>Renovace a zakázkové čalounění interiérů, sedadel a volantů prémiových vozů. Každý steh s precizností, která se nedá vyrobit na lince.</p>
-    <a class="btn solid" href="#promena">Zažít proměnu</a>
+    <div class="hero-text">
+      <div class="label">Dílna Třebíč · Rumburk</div>
+      <h1>Interiér šitý pro jeden vůz</h1>
+      <p>Ručně čalouníme sedadla, volanty a interiéry vozů. Z kůže, kterou si sami vyberete.</p>
+      <div class="hero-cta">
+        <a class="btn solid" href="#konfigurator">Navrhnout sedadlo</a>
+        <a class="btn quiet" href="#promena">Proměna</a>
+      </div>
+    </div>
+    <div class="hero-render slot" id="hero-slot"><img alt="Render sedadla z černé nappa kůže s koňakovým prošitím"></div>
   </div>
-  <div class="scroll-hint">Scrollujte</div>
 </header>
 
-<!-- 2 · BEFORE / AFTER SCROLL ZÓNA -->
+<!-- 2 · PROMĚNA (scroll before/after) -->
 <section class="ba" id="promena">
-  <div class="ba-sticky">
-    <div class="ba-layer ba-before"><div class="ba-label">Před</div><div class="seats" id="seats-before"></div></div>
-    <div class="ba-layer ba-after" id="ba-after"><div class="ba-label">Po</div><div class="seats" id="seats-after"></div></div>
-    <div class="ba-divider" id="ba-divider"></div>
-    <div class="ba-caption">
-      <div class="eyebrow">Transformace</div>
-      <h2>Z opotřebení k dokonalosti</h2>
-      <p>Scrollujte dolů – renovace se odkrývá zleva doprava</p>
+  <div class="ba-sticky wrap">
+    <div class="ba-top">
+      <div class="sec-head" style="margin:0">
+        <div class="label">Před a po</div>
+        <h2>Proměna</h2>
+      </div>
+      <p>Stejné sedadlo před renovací a po ní. Posouvejte stránkou dolů.</p>
+    </div>
+    <div class="ba-stage">
+      <div class="slot" id="ba-before"><img alt="Opotřebované sedadlo před renovací"></div>
+      <div class="slot ba-after" id="ba-after"><img alt="Stejné sedadlo po renovaci"></div>
+      <div class="ba-line" id="ba-line"></div>
+    </div>
+    <div>
+      <input class="ba-range" id="ba-range" type="range" min="0" max="100" value="50" aria-label="Poměr před a po">
+      <div class="ba-tags label"><span>Po</span><span>Před</span></div>
     </div>
   </div>
 </section>
@@ -207,68 +285,92 @@
 <!-- 3 · KONFIGURÁTOR -->
 <section id="konfigurator">
   <div class="wrap">
-    <div class="eyebrow">Vlajková loď</div>
-    <h2>Navrhněte si vlastní sedadlo</h2>
-    <p class="lead">Zvolte zónu, materiál, barvu i prošití – náhled i orientační cena se přepočítají okamžitě. V ostré verzi zde bude 3D model (Three.js / R3F) s rotací 360°.</p>
+    <div class="sec-head reveal">
+      <h2>Konfigurátor</h2>
+      <p class="lead">Klikněte na část sedadla a nastavte materiál, vzor, barvu a nit. Sedadlem otočíte tažením, kolečkem přiblížíte šev.</p>
+    </div>
 
     <div class="config">
-      <div class="stage" id="stage">
-        <div class="stage-tag" id="stage-tag">BMW M · sportovní skořepina</div>
-        <div class="zoom-ctrl"><button id="zin" aria-label="Přiblížit">+</button><button id="zout" aria-label="Oddálit">−</button></div>
-        <div id="seat-config"></div>
-        <div class="stage-hint">⟷ Táhněte pro otočení · kliknutím vyberte zónu</div>
+      <div class="stage-col">
+        <div class="stage" id="stage"><div class="slot" id="stage-slot"></div></div>
+        <div class="stage-bar">
+          <div class="views" id="views">
+            <button data-view="full" class="on">Celek</button>
+            <button data-view="seam">Detail švu</button>
+            <button data-view="back">Zezadu</button>
+          </div>
+          <div class="zone-note" id="zone-note">Vybráno: střed</div>
+        </div>
       </div>
 
       <div class="panel">
-        <h3>Základní šablona</h3>
-        <div class="chips" data-group="model">
-          <button class="chip on" data-v="BMW M · sportovní skořepina">BMW M</button>
-          <button class="chip" data-v="Mercedes AMG · komfortní">Mercedes AMG</button>
-          <button class="chip" data-v="Porsche · sportovní">Porsche</button>
-          <button class="chip" data-v="Audi RS · sportovní">Audi RS</button>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Šablona</span><span id="v-model"></span></div>
+          <div class="choices" data-group="model">
+            <button data-v="bmw">BMW M</button>
+            <button data-v="amg">Mercedes-AMG</button>
+            <button data-v="porsche">Porsche</button>
+            <button data-v="audi">Audi RS</button>
+          </div>
         </div>
-
-        <h3>Zóna</h3>
-        <div class="chips" data-group="zone">
-          <button class="chip on" data-v="center">Střed sedáku</button>
-          <button class="chip" data-v="bolster">Bočnice</button>
-          <button class="chip" data-v="head">Opěrka hlavy</button>
-          <button class="chip" data-v="shell">Zadní skořepina</button>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Část sedadla</span><span id="v-zone"></span></div>
+          <div class="choices" data-group="zone">
+            <button data-v="center">Střed sedáku</button>
+            <button data-v="bolster">Bočnice</button>
+            <button data-v="head">Opěrka hlavy</button>
+            <button data-v="shell">Zadní skořepina</button>
+          </div>
         </div>
-
-        <h3>Materiál zóny</h3>
-        <div class="chips" data-group="material">
-          <button class="chip on" data-v="nappa">Nappa</button>
-          <button class="chip" data-v="alcantara">Alcantara</button>
-          <button class="chip" data-v="perf">Perforovaná</button>
-          <button class="chip" data-v="diamond">Diamantové prošití</button>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Materiál</span><span id="v-mat"></span></div>
+          <div class="choices" data-group="mat">
+            <button data-v="nappa">Nappa</button>
+            <button data-v="alcantara">Alcantara</button>
+          </div>
         </div>
-
-        <h3>Barva zóny</h3>
-        <div class="swatches" data-group="color"></div>
-
-        <h3>Barva nitě</h3>
-        <div class="swatches" data-group="thread"></div>
-
-        <h3>Detaily</h3>
-        <div class="row">
-          <label class="check"><input type="checkbox" id="opt-stripe"> Kontrastní pruh</label>
-          <label class="check"><input type="checkbox" id="opt-piping" checked> Paspule</label>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Vzor</span><span id="v-pat"></span></div>
+          <div class="choices" data-group="pat">
+            <button data-v="plain">Hladký</button>
+            <button data-v="perf">Perforace</button>
+            <button data-v="channels">Reliéfní kanály</button>
+            <button data-v="diamond">Diamantové prošití</button>
+          </div>
         </div>
-        <div class="row" style="margin-top:12px">
-          <input type="text" id="opt-logo" maxlength="10" placeholder="Embosované logo / iniciály (max 10 znaků)">
+        <div class="opt">
+          <div class="opt-head"><span class="label">Barva</span><span id="v-color"></span></div>
+          <div class="swatches" id="sw-color"></div>
         </div>
-
-        <div class="ai-upload">
-          <span>Máte jiné sedadlo? Nahrajte 3–4 fotky (zepředu, z boku, zezadu) a AI zrekonstruuje tvar.</span>
-          <span class="badge">Fáze 2</span>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Nit a paspule</span><span id="v-thread"></span></div>
+          <div class="swatches" id="sw-thread"></div>
+          <div class="toggles">
+            <label><input type="checkbox" id="o-stripe"> Kontrastní pruh</label>
+            <label><input type="checkbox" id="o-piping"> Paspule</label>
+          </div>
         </div>
-
-        <div class="summary">
-          <div class="price"><small>ORIENTAČNÍ CENA / SEDADLO</small><span id="price">—</span></div>
+        <div class="opt">
+          <div class="opt-head"><span class="label">Logo na opěrce</span><span id="v-logo"></span></div>
+          <div class="choices" data-group="logoMode">
+            <button data-v="none">Bez loga</button>
+            <button data-v="emboss">Embosované</button>
+            <button data-v="embroid">Vyšívané</button>
+          </div>
+          <label class="field"><span>Text loga (max. 8 znaků)</span><input id="o-logo" maxlength="8" placeholder="Např. iniciály"></label>
+        </div>
+        <div class="phase2">
+          <p>Jiné sedadlo? Nahrajte 3 až 4 fotky zepředu, z boku a zezadu. Tvar sedadla dopočítáme.</p>
+          <button class="btn quiet" disabled>Připravujeme</button>
+        </div>
+        <div class="total">
+          <div>
+            <div class="label">Orientační cena za sedadlo (ukázka)</div>
+            <div class="price" id="price">–</div>
+          </div>
           <div class="row">
-            <button class="btn" id="export">Export</button>
-            <a class="btn solid" href="#kontakt" id="inquire">Poptat</a>
+            <button class="btn quiet" id="export">Export</button>
+            <button class="btn solid" id="inquire">Poslat poptávku</button>
           </div>
         </div>
       </div>
@@ -276,268 +378,702 @@
   </div>
 </section>
 
-<!-- 4 · ŘEMESLO & DETAILY -->
-<section id="remeslo">
+<!-- 4 · MATERIÁLY (makro svět) -->
+<section id="materialy">
   <div class="wrap">
-    <div class="eyebrow">Makro svět</div>
-    <h2>Řemeslo, které je vidět zblízka</h2>
-    <p class="lead">Najeďte myší na materiál – v ostré verzi zde budou makro fotografie a video detaily švů.</p>
     <div class="mats">
-      <div class="mat"><div class="tex-wrap"><div class="tex nappa"></div></div><div class="meta"><h4>Nappa kůže</h4><p>Jemná, měkká, s přirozeným leskem.</p></div></div>
-      <div class="mat"><div class="tex-wrap"><div class="tex alcantara"></div></div><div class="meta"><h4>Alcantara</h4><p>Sportovní úchop, matný semišový povrch.</p></div></div>
-      <div class="mat"><div class="tex-wrap"><div class="tex perf"></div></div><div class="meta"><h4>Perforace</h4><p>Prodyšnost pro ventilovaná sedadla.</p></div></div>
-      <div class="mat"><div class="tex-wrap"><div class="tex diamond"></div></div><div class="meta"><h4>Diamantové prošití</h4><p>Ikonický vzor ručně šitý na míru.</p></div></div>
+      <div>
+        <div class="sec-head reveal">
+          <h2>Materiály zblízka</h2>
+          <p class="lead">Před zakázkou si vzorky osaháte v dílně. Tady aspoň zblízka.</p>
+        </div>
+        <div class="mat-list" id="mat-list">
+          <button class="mat-item on" data-i="0"><span class="n">01</span><h3>Nappa</h3><p>Hladká, měkká kůže s jemným přirozeným zrnem.</p></button>
+          <button class="mat-item" data-i="1"><span class="n">02</span><h3>Alcantara</h3><p>Matný semiš z mikrovlákna. Neklouže, drží v zatáčkách.</p></button>
+          <button class="mat-item" data-i="2"><span class="n">03</span><h3>Perforace</h3><p>Pravidelné otvory pro ventilovaná a vyhřívaná sedadla.</p></button>
+          <button class="mat-item" data-i="3"><span class="n">04</span><h3>Diamantové prošití</h3><p>Prošívaný vzor s ručně vedeným šicím stehem.</p></button>
+        </div>
+      </div>
+      <div class="mat-view slot" id="mat-slot"><img alt="Detail materiálu"></div>
     </div>
   </div>
 </section>
 
-<!-- 5 · PORTFOLIO -->
+<!-- 5 · REALIZACE -->
 <section id="realizace">
   <div class="wrap">
-    <div class="eyebrow">Portfolio</div>
-    <h2>Realizace před a po</h2>
-    <p class="lead">Jednotně upravené snímky (AI asset pipeline) – zde zastoupené ilustracemi.</p>
-    <div class="filters chips" id="filters">
-      <button class="chip on" data-f="all">Vše</button>
-      <button class="chip" data-f="mercedes">Mercedes</button>
-      <button class="chip" data-f="bmw">BMW</button>
-      <button class="chip" data-f="audi">Audi</button>
-      <button class="chip" data-f="veteran">Veteráni</button>
+    <div class="sec-head reveal">
+      <h2>Realizace</h2>
+      <p class="lead">Najetím nebo klepnutím uvidíte stav před. Ukázkové rendery, před spuštěním je nahradí fotky zakázek.</p>
+    </div>
+    <div class="filters choices" id="filters">
+      <button data-f="all" class="on">Vše</button>
+      <button data-f="mercedes">Mercedes</button>
+      <button data-f="bmw">BMW</button>
+      <button data-f="audi">Audi</button>
+      <button data-f="porsche">Porsche</button>
+      <button data-f="veteran">Veteráni</button>
     </div>
     <div class="gallery" id="gallery"></div>
+    <div class="empty" id="empty">Pro tento filtr zatím nemáme ukázku. Rádi vám ale ukážeme podobnou zakázku v dílně.</div>
   </div>
 </section>
 
 <!-- 6 · KONTAKT -->
 <section id="kontakt">
   <div class="wrap">
-    <div class="eyebrow">Lokace & kontakt</div>
-    <h2>Individuální konzultace</h2>
-    <div class="branches">
-      <div class="branch">
-        <h3>Třebíč</h3>
-        <p>Adresa pobočky · Třebíč<br>Po–Pá 8:00–17:00</p>
-        <div class="map"></div>
-        <p>+420 000 000 000<br>trebic@carsvolant.cz</p>
+    <div class="contact">
+      <div>
+        <div class="sec-head reveal">
+          <h2>Konzultace</h2>
+          <p class="lead">Nad vzorky materiálů probereme váš vůz, návrh i termín. Bez závazku.</p>
+        </div>
+        <div class="branch">
+          <h3>Třebíč</h3>
+          <dl><dt>Adresa</dt><dd>[doplnit adresu]</dd><dt>Telefon</dt><dd>+420 000 000 000</dd><dt>Otevřeno</dt><dd>Po–Pá 8–17, jinak po domluvě</dd></dl>
+        </div>
+        <div class="branch">
+          <h3>Rumburk</h3>
+          <dl><dt>Adresa</dt><dd>[doplnit adresu]</dd><dt>Telefon</dt><dd>+420 000 000 000</dd><dt>Otevřeno</dt><dd>Po–Pá 8–17, jinak po domluvě</dd></dl>
+        </div>
       </div>
-      <div class="branch">
-        <h3>Rumburk</h3>
-        <p>Adresa pobočky · Rumburk<br>Po–Pá 8:00–17:00</p>
-        <div class="map"></div>
-        <p>+420 000 000 000<br>rumburk@carsvolant.cz</p>
-      </div>
-      <form class="form" id="form">
-        <h3 style="font-size:28px">Rezervace konzultace</h3>
-        <input type="text" placeholder="Jméno" required>
-        <input type="email" placeholder="E-mail" required>
-        <select><option>Pobočka Třebíč</option><option>Pobočka Rumburk</option></select>
-        <input type="date">
-        <textarea rows="3" id="form-msg" placeholder="Vůz a představa (konfigurace se vloží automaticky)"></textarea>
-        <button class="btn solid" type="submit">Odeslat nezávaznou poptávku</button>
+
+      <form id="form" novalidate>
+        <div class="grid2">
+          <label class="field"><span>Jméno</span><input name="name" autocomplete="name"><em class="msg"></em></label>
+          <label class="field"><span>E-mail nebo telefon</span><input name="contact" autocomplete="email"><em class="msg"></em></label>
+        </div>
+        <div class="grid2">
+          <label class="field"><span>Dílna</span><select name="branch"><option>Třebíč</option><option>Rumburk</option></select><em class="msg"></em></label>
+          <label class="field"><span>Preferovaný termín</span><input name="date" type="date"><em class="msg"></em></label>
+        </div>
+        <label class="field"><span>Vůz</span><input name="car" placeholder="Značka, model, rok"><em class="msg"></em></label>
+        <label class="field"><span>Zpráva</span><textarea name="msg" id="form-msg" rows="4" placeholder="Konfigurace z konfigurátoru se sem vloží sama."></textarea><em class="msg"></em></label>
+        <div><button class="btn solid" type="submit">Domluvit konzultaci</button></div>
+        <div class="sent" id="sent"><h3>Děkujeme</h3><p>Ozveme se do jednoho pracovního dne a domluvíme termín.</p></div>
       </form>
     </div>
   </div>
 </section>
+</main>
 
-<footer><div class="wrap"><span>© Cars Volant · prototyp</span><span>Třebíč · Rumburk</span></div></footer>
-<div class="toast" id="toast"></div>
+<footer>
+  <div class="wrap">
+    <span class="label">Sedlář · pracovní název značky · prototyp</span>
+    <span class="label">Třebíč · Rumburk</span>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
 
+<script src="textures.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- UI, které nezávisí na 3D -->
 <script>
-/* ---------- Sedadlo jako parametrické SVG ---------- */
-const MAT = {
-  nappa:     { label: "Nappa", price: 0 },
-  alcantara: { label: "Alcantara", price: 2500 },
-  perf:      { label: "Perforovaná", price: 1800 },
-  diamond:   { label: "Diamantové prošití", price: 4500 },
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function toast(msg) {
+    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2600);
+  }
+
+  // Navigace ztmavne po odscrollování
+  addEventListener("scroll", () => $("#nav").classList.toggle("solid", scrollY > 40), { passive: true });
+
+  // Jemné nabíhání nadpisů
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add("in")), { threshold: .2 });
+  $$(".reveal").forEach(el => io.observe(el));
+
+  // Proměna: GSAP ScrollTrigger + clip-path, při omezeném pohybu posuvník
+  function setReveal(p) {
+    $("#ba-after").style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
+    const line = $("#ba-line");
+    line.style.left = p * 100 + "%";
+    line.style.opacity = p > .005 && p < .995 ? 1 : 0;
+  }
+  if (reduced) {
+    setReveal(.5);
+    $("#ba-range").addEventListener("input", e => setReveal(e.target.value / 100));
+  } else if (window.gsap && window.ScrollTrigger) {
+    setReveal(0);
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.create({ trigger: "#promena", start: "top top", end: "bottom bottom", scrub: .6, onUpdate: s => setReveal(s.progress) });
+  } else {
+    setReveal(0);
+    const sec = $("#promena");
+    addEventListener("scroll", () => {
+      const r = sec.getBoundingClientRect();
+      setReveal(Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))));
+    }, { passive: true });
+  }
+
+  // Chybový stav: když se 3D knihovna nenačte (např. bez internetu), skeletony nahradí zpráva
+  setTimeout(() => {
+    if (window.__3d) return;
+    $$(".slot:not(.ready)").forEach(s => { s.classList.add("ready"); s.insertAdjacentHTML("beforeend", '<div class="err">3D náhled se nepodařilo načíst. Zkontrolujte připojení a obnovte stránku.</div>'); });
+  }, 20000);
+
+  // Formulář: popisek nad polem, chyba pod polem
+  $("#form").addEventListener("submit", e => {
+    e.preventDefault();
+    const f = e.target; let ok = true;
+    const setErr = (name, msg) => {
+      const field = f.elements[name].closest(".field");
+      field.classList.toggle("bad", !!msg); field.querySelector(".msg").textContent = msg || "";
+      if (msg) ok = false;
+    };
+    setErr("name", f.name.value.trim() ? "" : "Vyplňte prosím jméno.");
+    const c = f.contact.value.trim();
+    setErr("contact", /^\S+@\S+\.\S+$/.test(c) || /^\+?[\d\s]{9,}$/.test(c) ? "" : "Zadejte e-mail nebo telefon ve tvaru +420 …");
+    const d = f.date.value;
+    setErr("date", d && new Date(d) < new Date(new Date().toDateString()) ? "Termín nemůže být v minulosti." : "");
+    if (!ok) return;
+    $$(".field, .grid2, button[type=submit]", f).forEach(el => el.style.display = "none");
+    $("#sent").style.display = "block";
+  });
+</script>
+
+<!-- 3D: realistická sedadla (three.js, PBR materiály, studiové světlo) -->
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+window.__3d = true;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const BG = "#0e0d0c";
+
+/* ---------- Data ---------- */
+const TEMPLATES = {
+  bmw:     { label: "BMW M",        sport: true,  bol: 1.15, base: 24900 },
+  amg:     { label: "Mercedes-AMG", sport: false, bol: 0.95, base: 22900 },
+  porsche: { label: "Porsche",      sport: true,  bol: 1.35, base: 26900 },
+  audi:    { label: "Audi RS",      sport: false, bol: 1.1,  base: 23900 },
 };
-const COLORS = ["#161616", "#5a2a1a", "#8b1e1e", "#c9b79c", "#2d3a4a", "#e8e2d6"];
-const THREADS = ["#c8a46a", "#d23b3b", "#e8e2d6", "#2f6bd1", "#161616"];
-
-function overlay(shape, mat) {
-  if (mat === "perf") return shape.replace("FILL", 'fill="url(#pat-perf)"');
-  if (mat === "diamond") return shape.replace("FILL", 'fill="url(#pat-diamond)"');
-  if (mat === "alcantara") return shape.replace("FILL", 'fill="#000" filter="url(#f-suede)"');
-  return shape.replace("FILL", 'fill="url(#g-sheen)"'); // nappa = lesk
-}
-
-function seatSVG(c, opts = {}) {
-  const S = {
-    shell:  '<path d="M66 96 Q66 72 96 70 L204 70 Q234 72 234 96 L244 272 L56 272 Z" FILL/>',
-    head:   '<rect x="103" y="8" width="94" height="62" rx="24" FILL/>',
-    bolL:   '<path d="M74 102 Q74 82 100 80 L112 80 L112 266 L66 266 Z" FILL/><path d="M50 282 L112 282 L112 398 L62 398 Q46 398 46 382 Z" FILL/>',
-    bolR:   '<path d="M226 102 Q226 82 200 80 L188 80 L188 266 L234 266 Z" FILL/><path d="M250 282 L188 282 L188 398 L238 398 Q254 398 254 382 Z" FILL/>',
-    center: '<rect x="112" y="84" width="76" height="182" rx="10" FILL/><rect x="112" y="282" width="76" height="116" rx="8" FILL/>',
-  };
-  const z = c.zones;
-  const part = (key, zoneKey) => {
-    const base = S[key].replaceAll("FILL", `fill="${z[zoneKey].color}"`);
-    const ov = S[key].split("/>").filter(Boolean).map(p => overlay(p + "/>", z[zoneKey].mat)).join("");
-    const sel = opts.selected === zoneKey ? ' class="zone sel"' : ' class="zone"';
-    return `<g data-zone="${zoneKey}"${sel}>${base}${ov}</g>`;
-  };
-  const t = c.thread, st = `stroke="${t}" stroke-width="1.3" stroke-dasharray="4 3" fill="none"`;
-  const stripe = c.stripe ? `<rect x="144" y="84" width="12" height="182" fill="${t}" opacity=".85"/><rect x="144" y="282" width="12" height="116" fill="${t}" opacity=".85"/>` : "";
-  const piping = c.piping ? `<g stroke="${t}" stroke-width="2" fill="none" opacity=".9"><path d="M112 84 V266 M188 84 V266 M112 282 V398 M188 282 V398"/></g>` : "";
-  const logo = c.logo ? `<text x="150" y="46" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="18" fill="${t}" opacity=".9" letter-spacing="2">${c.logo.replace(/[<&>"]/g, "")}</text>` : "";
-  const worn = opts.worn ? `<g fill="#2a2218" opacity=".35"><ellipse cx="150" cy="330" rx="30" ry="18"/><ellipse cx="85" cy="200" rx="10" ry="30"/><ellipse cx="140" cy="140" rx="22" ry="14"/></g>
-      <g stroke="#0008" stroke-width="1.2" fill="none"><path d="M120 120 l14 8 l-6 12 l12 10"/><path d="M160 200 l-10 14 l8 10"/><path d="M78 150 l10 30 l-4 20"/><path d="M215 300 l-14 18 l6 22"/><path d="M130 320 l20 6 l6 20"/><path d="M110 30 l30 8"/></g>` : "";
-  return `<svg viewBox="30 0 240 410" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="150" cy="404" rx="110" ry="8" fill="#000" opacity=".5"/>
-    ${part("shell", "shell")}
-    <rect x="128" y="66" width="6" height="20" fill="#555"/><rect x="166" y="66" width="6" height="20" fill="#555"/>
-    ${part("head", "head")}
-    ${part("bolL", "bolster")}${part("bolR", "bolster")}
-    ${part("center", "center")}
-    ${stripe}
-    <g ${st}><rect x="116" y="88" width="68" height="174" rx="8"/><rect x="116" y="286" width="68" height="108" rx="6"/><rect x="107" y="12" width="86" height="54" rx="20"/></g>
-    ${piping}${logo}${worn}
-  </svg>`;
-}
+const COLORS = [
+  ["Černá", "#1b1a19"], ["Grafit", "#3a3936"], ["Koňak", "#7a4a26"], ["Tabák", "#5a3b24"],
+  ["Bordó", "#5c1d1f"], ["Tmavě modrá", "#1f2a3a"], ["Krémová", "#cdbfa6"], ["Slonová kost", "#e2d9c8"],
+];
+const THREADS = [["Koňak", "#b07a45"], ["Krémová", "#e6dcc8"], ["Červená", "#a8322d"], ["Stříbrná", "#9a9a98"], ["Černá", "#1b1a19"]];
+const ZONES = { center: "střed", bolster: "bočnice", head: "opěrka hlavy", shell: "zadní skořepina" };
+const MATS = { nappa: "Nappa", alcantara: "Alcantara" };
+const PATS = { plain: "Hladký", perf: "Perforace", channels: "Reliéfní kanály", diamond: "Diamantové prošití" };
+const LOGO = { none: "Bez loga", emboss: "Embosované", embroid: "Vyšívané" };
+const nameOf = (list, hex) => (list.find(c => c[1] === hex) || ["Vlastní"])[0];
 
 const cfg = {
-  model: "BMW M · sportovní skořepina",
-  thread: THREADS[0], stripe: false, piping: true, logo: "",
+  model: "bmw", thread: "#b07a45", stripe: false, piping: true, logoMode: "none", logo: "",
   zones: {
-    center:  { mat: "diamond", color: COLORS[0] },
-    bolster: { mat: "nappa",   color: COLORS[0] },
-    head:    { mat: "nappa",   color: COLORS[0] },
-    shell:   { mat: "nappa",   color: "#1e1e1e" },
+    center:  { mat: "nappa", pat: "diamond", color: "#1b1a19" },
+    bolster: { mat: "nappa", pat: "plain",   color: "#1b1a19" },
+    head:    { mat: "nappa", pat: "plain",   color: "#1b1a19" },
+    shell:   { mat: "nappa", pat: "plain",   color: "#1b1a19" },
   },
 };
-let zone = "center", rot = 0, zoom = 1;
+const clone = o => JSON.parse(JSON.stringify(o));
+const WORN = {
+  model: "bmw", thread: "#6d6457", stripe: false, piping: false, logoMode: "none", logo: "",
+  zones: {
+    center:  { mat: "nappa", pat: "perf",  color: "#6f665a" },
+    bolster: { mat: "nappa", pat: "plain", color: "#6a6154" },
+    head:    { mat: "nappa", pat: "plain", color: "#6f665a" },
+    shell:   { mat: "nappa", pat: "plain", color: "#4d463e" },
+  },
+};
 
-/* ---------- Before / After ---------- */
-const wornCfg = { thread: "#6b5f4f", zones: { center: { mat: "perf", color: "#6d6255" }, bolster: { mat: "nappa", color: "#5e554a" }, head: { mat: "nappa", color: "#6d6255" }, shell: { mat: "nappa", color: "#3a352f" } } };
-const newCfg  = { thread: "#c8a46a", piping: true, zones: { center: { mat: "diamond", color: "#5a2a1a" }, bolster: { mat: "nappa", color: "#161616" }, head: { mat: "nappa", color: "#161616" }, shell: { mat: "nappa", color: "#161616" } }, logo: "CV" };
-document.getElementById("seats-before").innerHTML = seatSVG(wornCfg, { worn: true }).repeat(2);
-document.getElementById("seats-after").innerHTML = seatSVG(newCfg).repeat(2);
+/* ---------- Textury materiálů ---------- */
+const IMG = {};
+await Promise.all(Object.entries(window.TEX || {}).map(([k, src]) => new Promise(res => {
+  const im = new Image(); im.onload = () => { IMG[k] = im; res(); }; im.onerror = res; im.src = src;
+})));
 
-const after = document.getElementById("ba-after"), divider = document.getElementById("ba-divider");
-function setReveal(p) {
-  after.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
-  divider.style.left = `${p * 100}%`;
-  divider.style.opacity = p > 0.001 && p < 0.999 ? 1 : 0;
-}
-setReveal(0);
-if (window.gsap && window.ScrollTrigger) {
-  gsap.registerPlugin(ScrollTrigger);
-  ScrollTrigger.create({ trigger: "#promena", start: "top top", end: "bottom bottom", scrub: 0.6, onUpdate: s => setReveal(s.progress) });
-} else {
-  const sec = document.getElementById("promena");
-  addEventListener("scroll", () => {
-    const r = sec.getBoundingClientRect();
-    setReveal(Math.min(1, Math.max(0, -r.top / (r.height - innerHeight))));
-  }, { passive: true });
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+const texCache = new Map();
+
+// Vytvoří barevnou mapu a normálovou mapu panelu (w × h v metrech, r = zaoblení hrany)
+function panelTex(zc, o) {
+  const key = JSON.stringify([zc, o]);
+  if (texCache.has(key)) return texCache.get(key);
+  const W = 512, H = Math.max(128, Math.min(1024, Math.round(512 * o.h / o.w)));
+  const ppm = W / o.w;
+  const mk = () => { const c = document.createElement("canvas"); c.width = W; c.height = H; return [c, c.getContext("2d")]; };
+  const [cc, c] = mk(), [hc, h] = mk(), [nc, n] = mk();
+  const alc = zc.mat === "alcantara";
+
+  c.fillStyle = zc.color; c.fillRect(0, 0, W, H);
+  if (o.stripe) { c.fillStyle = o.thread; c.fillRect(W / 2 - .02 * ppm, 0, .04 * ppm, H); }
+  if (IMG.leatherGrain) {
+    const p = c.createPattern(IMG.leatherGrain, "repeat");
+    p.setTransform(new DOMMatrix().scale(.12 * ppm / 512));
+    c.save(); c.globalCompositeOperation = "multiply"; c.globalAlpha = alc ? .35 : 1; c.fillStyle = p; c.fillRect(0, 0, W, H); c.restore();
+  }
+  h.fillStyle = "#808080"; h.fillRect(0, 0, W, H);
+
+  const inset = (o.r + .012) * ppm;
+  const stitch = (ctx, pts, col, wid = .0016) => {
+    ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = Math.max(1.2, wid * ppm); ctx.lineCap = "round";
+    ctx.setLineDash([.0045 * ppm, .0025 * ppm]); ctx.beginPath(); ctx.moveTo(...pts[0]); pts.slice(1).forEach(p => ctx.lineTo(...p)); ctx.stroke(); ctx.restore();
+  };
+  const valley = (pts, wid) => {
+    h.save(); h.filter = `blur(${Math.max(1, wid * ppm * .6)}px)`; h.strokeStyle = "#000"; h.lineWidth = wid * ppm;
+    h.beginPath(); h.moveTo(...pts[0]); pts.slice(1).forEach(p => h.lineTo(...p)); h.stroke(); h.restore();
+    c.save(); c.strokeStyle = "rgba(0,0,0,.28)"; c.lineWidth = wid * ppm * .6; c.filter = `blur(${wid * ppm * .3}px)`;
+    c.beginPath(); c.moveTo(...pts[0]); pts.slice(1).forEach(p => c.lineTo(...p)); c.stroke(); c.restore();
+  };
+
+  if (zc.pat === "perf") {
+    const s = .011 * ppm, rad = Math.max(1, .0015 * ppm);
+    for (let y = inset + s / 2, row = 0; y < H - inset; y += s, row++)
+      for (let x = inset + s / 2 + (row % 2) * s / 2; x < W - inset; x += s) {
+        c.fillStyle = "rgba(8,6,5,.85)"; c.beginPath(); c.arc(x, y, rad, 0, 7); c.fill();
+        h.fillStyle = "#000"; h.beginPath(); h.arc(x, y, rad * 1.3, 0, 7); h.fill();
+      }
+  }
+  if (zc.pat === "channels") {
+    for (let y = inset + .05 * ppm; y < H - inset; y += .05 * ppm) {
+      valley([[inset, y], [W - inset, y]], .007);
+      stitch(c, [[inset, y - .006 * ppm], [W - inset, y - .006 * ppm]], o.thread);
+      stitch(c, [[inset, y + .006 * ppm], [W - inset, y + .006 * ppm]], o.thread);
+    }
+  }
+  if (zc.pat === "diamond") {
+    c.save(); h.save();
+    [c, h].forEach(ctx => { ctx.beginPath(); ctx.rect(inset, inset, W - 2 * inset, H - 2 * inset); ctx.clip(); });
+    const s = .05 * ppm * Math.SQRT2, L = W + H;
+    for (let k = -L; k < L; k += s) {
+      valley([[k, 0], [k + H, H]], .006); valley([[k, 0], [k - H, H]], .006);
+      stitch(c, [[k, 0], [k + H, H]], o.thread); stitch(c, [[k, 0], [k - H, H]], o.thread);
+    }
+    c.restore(); h.restore();
+  }
+  if (o.edge) {
+    const e = inset - .004 * ppm;
+    stitch(c, [[e, e], [W - e, e], [W - e, H - e], [e, H - e], [e, e]], o.thread);
+    valley([[e - .003 * ppm, e - .003 * ppm], [W - e + .003 * ppm, e - .003 * ppm], [W - e + .003 * ppm, H - e + .003 * ppm], [e - .003 * ppm, H - e + .003 * ppm], [e - .003 * ppm, e - .003 * ppm]], .003);
+  }
+  if (o.logo && o.logoMode !== "none") {
+    const fs = .05 * ppm;
+    [c, h].forEach(ctx => { ctx.save(); ctx.font = `500 ${fs}px Manrope, sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; if ("letterSpacing" in ctx) ctx.letterSpacing = `${fs * .25}px`; });
+    if (o.logoMode === "embroid") { c.fillStyle = o.thread; c.fillText(o.logo, W / 2, H / 2); h.fillStyle = "#b0b0b0"; }
+    else { c.fillStyle = "rgba(0,0,0,.35)"; c.fillText(o.logo, W / 2, H / 2); h.fillStyle = "#000"; h.filter = "blur(1.5px)"; }
+    h.fillText(o.logo, W / 2, H / 2);
+    c.restore(); h.restore();
+  }
+  if (o.worn) {
+    const R = rng(o.seed || 7);
+    for (let i = 0; i < 14; i++) {        // skvrny a vyblednutí
+      const x = R() * W, y = R() * H, r = (.03 + R() * .08) * ppm;
+      const g = c.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, R() > .5 ? "rgba(255,240,220,.16)" : "rgba(30,20,12,.22)"); g.addColorStop(1, "rgba(0,0,0,0)");
+      c.fillStyle = g; c.fillRect(x - r, y - r, 2 * r, 2 * r);
+    }
+    for (let i = 0; i < 26; i++) {        // praskliny
+      let x = R() * W, y = R() * H; const pts = [[x, y]];
+      let a = R() * 6.28;
+      for (let j = 0; j < 6 + R() * 10; j++) { a += (R() - .5) * 1.2; x += Math.cos(a) * .006 * ppm; y += Math.sin(a) * .006 * ppm; pts.push([x, y]); }
+      [[c, "rgba(25,18,12,.6)"], [h, "#000"]].forEach(([ctx, col]) => { ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(...pts[0]); pts.forEach(p => ctx.lineTo(...p)); ctx.stroke(); ctx.restore(); });
+    }
+    for (let i = 0; i < 5; i++) {         // záhyby
+      const y = R() * H, x = R() * W * .3;
+      h.save(); h.filter = "blur(6px)"; h.strokeStyle = "#303030"; h.lineWidth = .01 * ppm;
+      h.beginPath(); h.moveTo(x, y); h.quadraticCurveTo(W / 2, y + (R() - .5) * .08 * ppm, W - x, y + (R() - .5) * .06 * ppm); h.stroke(); h.restore();
+    }
+  }
+
+  // Normálová mapa: zrno materiálu + reliéf vzoru (výšková mapa → normály)
+  const baseN = alc ? IMG.suedeNormal : IMG.leatherNormal;
+  if (baseN) {
+    const p = n.createPattern(baseN, "repeat");
+    p.setTransform(new DOMMatrix().scale((alc ? .16 : .12) * ppm / baseN.width));
+    n.fillStyle = p; n.fillRect(0, 0, W, H);
+  } else { n.fillStyle = "#8080ff"; n.fillRect(0, 0, W, H); }
+  const nd = n.getImageData(0, 0, W, H), hd = h.getImageData(0, 0, W, H).data, d = nd.data;
+  const S = 2.6, hv = (x, y) => hd[((Math.min(H - 1, Math.max(0, y)) * W) + Math.min(W - 1, Math.max(0, x))) * 4] / 255;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4;
+    let nx = d[i] / 127.5 - 1, ny = d[i + 1] / 127.5 - 1, nz = d[i + 2] / 127.5 - 1;
+    nx -= (hv(x + 1, y) - hv(x - 1, y)) * S; ny += (hv(x, y + 1) - hv(x, y - 1)) * S;
+    const l = Math.hypot(nx, ny, nz) || 1;
+    d[i] = (nx / l + 1) * 127.5; d[i + 1] = (ny / l + 1) * 127.5; d[i + 2] = (nz / l + 1) * 127.5;
+  }
+  n.putImageData(nd, 0, 0);
+
+  const map = new THREE.CanvasTexture(cc); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8;
+  const normalMap = new THREE.CanvasTexture(nc); normalMap.anisotropy = 8;
+  const out = { map, normalMap };
+  texCache.set(key, out);
+  return out;
 }
 
-/* ---------- Konfigurátor ---------- */
-const host = document.getElementById("seat-config");
-function price() {
-  let p = 18900;
-  for (const z of Object.values(cfg.zones)) p += MAT[z.mat].price;
-  if (cfg.stripe) p += 1900;
-  if (cfg.piping) p += 1200;
-  if (cfg.logo) p += 2900;
-  return p.toLocaleString("cs-CZ") + " Kč";
-}
-function render() {
-  host.innerHTML = seatSVG(cfg, { selected: zone });
-  const svg = host.querySelector("svg");
-  svg.style.transform = `perspective(900px) rotateY(${rot}deg) scale(${zoom})`;
-  svg.querySelectorAll(".zone").forEach(g => {
-    g.style.cursor = "pointer";
-    if (g.classList.contains("sel")) g.style.filter = "drop-shadow(0 0 6px #c8a46a)";
-    g.addEventListener("click", e => { e.stopPropagation(); selectZone(g.dataset.zone); });
+function zoneMaterial(zc, t, worn) {
+  const alc = zc.mat === "alcantara";
+  const sheenCol = new THREE.Color(zc.color).lerp(new THREE.Color("#ffffff"), .35);
+  return new THREE.MeshPhysicalMaterial({
+    map: t.map, normalMap: t.normalMap, normalScale: new THREE.Vector2(alc ? .8 : .6, alc ? .8 : .6),
+    roughness: worn ? .72 : alc ? .95 : .46, metalness: 0,
+    clearcoat: alc || worn ? 0 : .12, clearcoatRoughness: .55,
+    sheen: alc ? 1 : .12, sheenRoughness: alc ? .5 : .7, sheenColor: alc ? sheenCol : new THREE.Color("#ffffff"),
   });
-  document.getElementById("price").textContent = price();
-  document.getElementById("stage-tag").textContent = cfg.model;
+}
+
+/* ---------- Geometrie: „polštář“ = zaoblený kvádr s vyboulenou lícovou stranou ---------- */
+function pillow(w, h, d, r, puff = 0, axis = "z", taper = null) {
+  const seg = v => Math.max(4, Math.min(40, Math.round(v / .012)));
+  const g = new THREE.BoxGeometry(w, h, d, seg(w), seg(h), seg(d));
+  const P = g.attributes.position, N = g.attributes.normal;
+  const hx = w / 2 - r, hy = h / 2 - r, hz = d / 2 - r;
+  const [ua, va] = axis === "z" ? ["x", "y"] : ["x", "z"];
+  const half = { x: hx, y: hy, z: hz };
+  const p = new THREE.Vector3(), cc = new THREE.Vector3(), nn = new THREE.Vector3();
+  for (let i = 0; i < P.count; i++) {
+    p.fromBufferAttribute(P, i);
+    cc.set(THREE.MathUtils.clamp(p.x, -hx, hx), THREE.MathUtils.clamp(p.y, -hy, hy), THREE.MathUtils.clamp(p.z, -hz, hz));
+    nn.subVectors(p, cc).normalize();
+    p.copy(cc).addScaledVector(nn, r);
+    if (puff && nn[axis] > 0) {
+      const u = cc[ua] / half[ua], v = cc[va] / half[va];
+      const f = (1 - u * u) * (1 - v * v), k = puff * nn[axis];
+      p[axis] += k * f;
+      const du = -2 * u * (1 - v * v) / half[ua], dv = -2 * v * (1 - u * u) / half[va];
+      nn[ua] -= k * du; nn[va] -= k * dv; nn.normalize();
+    }
+    if (taper) {                         // zúžení směrem nahoru (x kolem středu, z od zadní strany)
+      const t = THREE.MathUtils.clamp((p.y + h / 2) / h, 0, 1);
+      p.x *= 1 + (taper.x - 1) * t;
+      p.z = -d / 2 + (p.z + d / 2) * (1 + ((taper.z ?? 1) - 1) * t);
+    }
+    P.setXYZ(i, p.x, p.y, p.z); N.setXYZ(i, nn.x, nn.y, nn.z);
+  }
+  return g;
+}
+
+// Paspule po obvodu lícové strany panelu
+function pipingTube(w, h, d, r, col) {
+  const x = w / 2 - r * .3, y = h / 2 - r * .3, z = d / 2 - r * .3, cr = r * .7;
+  const shape = new THREE.Shape();
+  shape.moveTo(-x + cr, -y); shape.lineTo(x - cr, -y); shape.quadraticCurveTo(x, -y, x, -y + cr);
+  shape.lineTo(x, y - cr); shape.quadraticCurveTo(x, y, x - cr, y); shape.lineTo(-x + cr, y);
+  shape.quadraticCurveTo(-x, y, -x, y - cr); shape.lineTo(-x, -y + cr); shape.quadraticCurveTo(-x, -y, -x + cr, -y);
+  const pts = shape.getSpacedPoints(160).map(p => new THREE.Vector3(p.x, p.y, z));
+  const geo = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 320, .0042, 8, true);
+  return new THREE.Mesh(geo, new THREE.MeshPhysicalMaterial({ color: col, roughness: .5, clearcoat: .2 }));
+}
+
+/* ---------- Sedadlo ---------- */
+function buildSeat(c, opt = {}) {
+  const T = TEMPLATES[c.model], worn = !!opt.worn, seat = new THREE.Group();
+  const texOpt = (zone, w, h, r, extra = {}) => ({ w, h, r, thread: c.thread, worn, seed: w * 1000 + h * 100, edge: zone === "center", ...extra });
+  // Vzor, logo a prošití jen na lícové straně; boky dílu hladké.
+  // Pořadí skupin BoxGeometry: +x, −x, +y, −y, +z, −z
+  const add = (parent, zone, geo, tex, pos, rot = [0, 0, 0], face = 4) => {
+    const zc = c.zones[zone];
+    const front = zoneMaterial(zc, panelTex(zc, tex), worn);
+    let mat = front;
+    if (face !== "all") {
+      const side = zoneMaterial(zc, panelTex({ ...zc, pat: "plain" }, { ...tex, edge: false, stripe: false, logo: "", logoMode: "none" }), worn);
+      mat = [side, side, side, side, side, side]; mat[face] = front;
+    }
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(...pos); m.rotation.set(...rot); m.castShadow = true; m.receiveShadow = true; m.userData.zone = zone;
+    parent.add(m); return m;
+  };
+  const b = T.bol;
+
+  // Kolejnice a spodní kryt
+  const dark = new THREE.MeshPhysicalMaterial({ color: "#141312", roughness: .55 });
+  const metal = new THREE.MeshPhysicalMaterial({ color: "#3b3b3a", metalness: .9, roughness: .38 });
+  const plinth = new THREE.Mesh(pillow(.42, .05, .46, .015), dark); plinth.position.set(0, .15, 0); plinth.castShadow = true; seat.add(plinth);
+  [-.16, .16].forEach(x => { const r = new THREE.Mesh(pillow(.03, .03, .6, .008), metal); r.position.set(x, .11, 0); r.castShadow = true; seat.add(r); });
+
+  // Sedák: skořepina, střed, stehenní boky
+  const cushion = new THREE.Group(); cushion.rotation.x = .06; seat.add(cushion);
+  add(cushion, "shell", pillow(.5, .09, .5, .035, 0, "y"), texOpt("shell", .5, .5, .035), [0, .225, .01], [0, 0, 0], "all");
+  const sc = add(cushion, "center", pillow(.28, .07, .46, .028, .018, "y"), texOpt("center", .28, .46, .028, { stripe: c.stripe }), [0, .305, .03], [0, 0, 0], 2);
+  [-1, 1].forEach(s => add(cushion, "bolster", pillow(.1, .07 * b, .49, .035, .01, "y"), texOpt("bolster", .1, .49, .035), [s * .19, .29 + .014 * b, .03], [0, 0, s * .32], 2));
+  if (c.piping) { const p = pipingTube(.28, .46, .07, .028, c.thread); p.rotation.x = -Math.PI / 2; p.position.copy(sc.position); cushion.add(p); }
+
+  // Opěradlo (skloněné dozadu, zúžené k ramenům)
+  const back = new THREE.Group(); back.position.set(0, .29, -.2); back.rotation.x = -.22; seat.add(back);
+  add(back, "shell", pillow(.54, .66, .1, .04, 0, "z", { x: .84 }), texOpt("shell", .54, .66, .04), [0, .33, -.045], [0, 0, 0], "all");
+  const bc = add(back, "center", pillow(.27, .52, .06, .026, .02, "z"), texOpt("center", .27, .52, .026, { stripe: c.stripe }), [0, .31, .035]);
+  [-1, 1].forEach(s => add(back, "bolster", pillow(.11, .52, .13 * b, .045, .01, "z", { x: .85, z: .5 }), texOpt("bolster", .11, .52, .045), [s * .195, .29, .03], [0, -s * .3, 0]));
+  if (c.piping) { const p = pipingTube(.27, .52, .06, .026, c.thread); p.position.copy(bc.position); back.add(p); }
+
+  // Opěrka hlavy: sportovní integrovaná do skořepiny, komfortní na tyčích
+  const logo = { logo: c.logo, logoMode: c.logoMode };
+  if (T.sport) {
+    add(back, "shell", pillow(.3, .26, .09, .04, 0, "z", { x: .9 }), texOpt("shell", .3, .26, .04), [0, .76, -.04], [0, 0, 0], "all");
+    add(back, "head", pillow(.24, .19, .05, .022, .014), texOpt("head", .24, .19, .022, logo), [0, .77, .02]);
+  } else {
+    add(back, "head", pillow(.27, .17, .1, .045, .015), texOpt("head", .27, .17, .045, logo), [0, .82, .0]);
+    [-.07, .07].forEach(x => { const r = new THREE.Mesh(new THREE.CylinderGeometry(.006, .006, .14, 16), new THREE.MeshPhysicalMaterial({ color: "#b8b8b6", metalness: 1, roughness: .22 })); r.position.set(x, .69, -.01); back.add(r); });
+  }
+  return seat;
+}
+
+const mats = m => [].concat(m.material);
+function disposeTree(o) { o.traverse(m => { if (m.isMesh) { m.geometry.dispose(); new Set(mats(m)).forEach(x => x.dispose()); } }); }
+
+/* ---------- Studio (světlo, stín, prostředí) ---------- */
+function makeStudio(renderer) {
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(BG);
+  const pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .6;
+  const key = new THREE.DirectionalLight("#fff3e6", 2.4); key.position.set(1.3, 2.4, 1.7); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -.0004; key.shadow.normalBias = .01;
+  Object.assign(key.shadow.camera, { left: -1, right: 1, top: 1, bottom: -1, near: .5, far: 6 });
+  const rim = new THREE.DirectionalLight("#d9e1ff", 1.3); rim.position.set(-1.6, 1.8, -2);
+  const fill = new THREE.DirectionalLight("#ffffff", .35); fill.position.set(-1.5, .6, 1.2);
+  scene.add(key, rim, fill);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.ShadowMaterial({ opacity: .55 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  // měkký kontaktní stín
+  const cv = document.createElement("canvas"); cv.width = cv.height = 128; const g = cv.getContext("2d");
+  const rg = g.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, "rgba(0,0,0,.75)"); rg.addColorStop(1, "rgba(0,0,0,0)");
+  g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+  const blob = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false }));
+  blob.rotation.x = -Math.PI / 2; blob.position.y = .002; scene.add(blob);
+  return scene;
+}
+
+/* ---------- Statické rendery (hero, proměna, galerie, materiály) ---------- */
+let shot, shotScene;
+const cam = new THREE.PerspectiveCamera(28, 1, .05, 20);
+async function snap(obj, { w, h, pos, target = [0, .5, 0], fov = 28 }) {
+  shot.setSize(w, h, false);
+  cam.fov = fov; cam.aspect = w / h; cam.position.set(...pos); cam.lookAt(...target); cam.updateProjectionMatrix();
+  shotScene.add(obj); shot.render(shotScene, cam); shotScene.remove(obj);
+  const url = shot.domElement.toDataURL("image/jpeg", .9);
+  disposeTree(obj);
+  await new Promise(r => setTimeout(r, 0));   // nechat prohlížeč dýchat mezi rendery
+  return url;
+}
+function fill(slot, url, sel = "img") {
+  const img = slot.querySelector(sel);
+  img.onload = () => slot.classList.add("ready");
+  img.src = url;
+}
+function fail(slot) { slot.classList.add("ready"); slot.insertAdjacentHTML("beforeend", '<div class="err">3D náhled se v tomto prohlížeči nepodařilo spustit.</div>'); }
+
+/* ---------- Konfigurátor (živý 3D pohled) ---------- */
+let live, liveScene, liveCam, controls, seatObj, running = false;
+const VIEWS = {
+  full: { pos: [1.3, 1.15, 1.85], target: [0, .6, 0] },
+  seam: { pos: [.3, .85, .45], target: [0, .6, -.25] },
+  back: { pos: [-1.0, 1.2, -1.7], target: [0, .6, 0] },
+};
+let zone = "center";
+
+function initLive() {
+  const stage = $("#stage");
+  live = new THREE.WebGLRenderer({ antialias: true });
+  live.setPixelRatio(Math.min(devicePixelRatio, 2));
+  liveScene = makeStudio(live);
+  liveCam = new THREE.PerspectiveCamera(30, 1, .05, 20);
+  liveCam.position.set(...VIEWS.full.pos);
+  stage.appendChild(live.domElement);
+  controls = new OrbitControls(liveCam, live.domElement);
+  Object.assign(controls, { enableDamping: true, dampingFactor: .08, enablePan: false, minDistance: .45, maxDistance: 3, maxPolarAngle: Math.PI * .52 });
+  controls.target.set(...VIEWS.full.target);
+  const resize = () => { const s = stage.clientWidth; live.setSize(s, s, false); liveCam.aspect = 1; liveCam.updateProjectionMatrix(); };
+  resize(); addEventListener("resize", resize);
+
+  // výběr zóny kliknutím
+  const ray = new THREE.Raycaster(), v2 = new THREE.Vector2(); let down;
+  live.domElement.addEventListener("pointerdown", e => down = [e.clientX, e.clientY]);
+  live.domElement.addEventListener("pointerup", e => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    const r = live.domElement.getBoundingClientRect();
+    v2.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+    ray.setFromCamera(v2, liveCam);
+    const hit = ray.intersectObject(seatObj, true).find(h => h.object.userData.zone);
+    if (hit) selectZone(hit.object.userData.zone);
+  });
+
+  new IntersectionObserver(([e]) => { running = e.isIntersecting; if (running) loop(); }).observe(stage);
+  $("#stage-slot").remove();
+}
+function loop() {
+  if (!running) return;
+  controls.update(); live.render(liveScene, liveCam);
+  requestAnimationFrame(loop);
+}
+function flyTo(v) {
+  const from = liveCam.position.clone(), to = new THREE.Vector3(...v.pos), t0 = performance.now();
+  const tf = controls.target.clone(), tt = new THREE.Vector3(...v.target);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / 800), e = 1 - Math.pow(1 - k, 3);
+    liveCam.position.lerpVectors(from, to, e); controls.target.lerpVectors(tf, tt, e);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function highlight() {
+  seatObj.traverse(m => { if (m.userData.zone === zone) mats(m).forEach(x => { x.emissive.set("#a8784a"); x.emissiveIntensity = .25; }); });
+  setTimeout(() => seatObj && seatObj.traverse(m => { if (m.userData.zone) mats(m).forEach(x => x.emissiveIntensity = 0); }), 450);
+}
+function rebuild(flash) {
+  if (seatObj) { liveScene.remove(seatObj); disposeTree(seatObj); }
+  seatObj = buildSeat(cfg); liveScene.add(seatObj);
+  if (flash) highlight();
   syncPanel();
 }
-function selectZone(z) { zone = z; setChip("zone", z); render(); }
-function setChip(group, v) {
-  document.querySelectorAll(`[data-group="${group}"] .chip`).forEach(b => b.classList.toggle("on", b.dataset.v === v));
+
+/* ---------- Panel ---------- */
+function price() {
+  let p = TEMPLATES[cfg.model].base;
+  for (const z of Object.values(cfg.zones)) p += (z.mat === "alcantara" ? 2400 : 0) + ({ plain: 0, perf: 1800, channels: 2200, diamond: 4600 })[z.pat];
+  if (cfg.stripe) p += 1900; if (cfg.piping) p += 1400;
+  if (cfg.logoMode !== "none" && cfg.logo) p += cfg.logoMode === "embroid" ? 2900 : 2200;
+  return p.toLocaleString("cs-CZ") + " Kč";
 }
+function setOn(group, v) { $$(`[data-group="${group}"] button`).forEach(b => b.classList.toggle("on", b.dataset.v === v)); }
 function syncPanel() {
-  setChip("material", cfg.zones[zone].mat);
-  document.querySelectorAll('[data-group="color"] .sw').forEach(s => s.classList.toggle("on", s.dataset.v === cfg.zones[zone].color));
-  document.querySelectorAll('[data-group="thread"] .sw').forEach(s => s.classList.toggle("on", s.dataset.v === cfg.thread));
+  const z = cfg.zones[zone];
+  setOn("model", cfg.model); setOn("zone", zone); setOn("mat", z.mat); setOn("pat", z.pat); setOn("logoMode", cfg.logoMode);
+  $$("#sw-color .sw").forEach(s => s.classList.toggle("on", s.dataset.v === z.color));
+  $$("#sw-thread .sw").forEach(s => s.classList.toggle("on", s.dataset.v === cfg.thread));
+  $("#v-model").textContent = TEMPLATES[cfg.model].sport ? "sportovní skořepina" : "komfortní";
+  $("#v-zone").textContent = ZONES[zone];
+  $("#v-mat").textContent = MATS[z.mat]; $("#v-pat").textContent = PATS[z.pat];
+  $("#v-color").textContent = nameOf(COLORS, z.color); $("#v-thread").textContent = nameOf(THREADS, cfg.thread);
+  $("#v-logo").textContent = cfg.logoMode === "none" ? "" : (cfg.logo || "zadejte text");
+  $("#zone-note").textContent = "Vybráno: " + ZONES[zone];
+  $("#o-stripe").checked = cfg.stripe; $("#o-piping").checked = cfg.piping;
+  $("#price").textContent = price();
 }
-function swatches(group, list, onPick) {
-  const el = document.querySelector(`[data-group="${group}"]`);
-  el.innerHTML = list.map(c => `<button class="sw" data-v="${c}" style="background:${c}" aria-label="${c}"></button>`).join("");
-  el.addEventListener("click", e => { const b = e.target.closest(".sw"); if (b) { onPick(b.dataset.v); render(); } });
+function selectZone(z) { zone = z; syncPanel(); highlight(); }
+function swatches(el, list, pick) {
+  el.innerHTML = list.map(([n, hex]) => `<button class="sw" data-v="${hex}" style="background:${hex}" title="${n}" aria-label="${n}"></button>`).join("");
+  el.addEventListener("click", e => { const b = e.target.closest(".sw"); if (b) { pick(b.dataset.v); rebuild(); } });
 }
-swatches("color", COLORS, v => cfg.zones[zone].color = v);
-swatches("thread", THREADS, v => cfg.thread = v);
-
-document.querySelectorAll('[data-group="zone"], [data-group="material"], [data-group="model"]').forEach(g => {
-  g.addEventListener("click", e => {
-    const b = e.target.closest(".chip"); if (!b) return;
-    const grp = g.dataset.group;
-    if (grp === "zone") zone = b.dataset.v;
-    if (grp === "material") cfg.zones[zone].mat = b.dataset.v;
-    if (grp === "model") { cfg.model = b.dataset.v; setChip("model", b.dataset.v); }
-    setChip(grp, b.dataset.v); render();
+function summary() {
+  const lines = Object.entries(cfg.zones).map(([k, z]) => `${ZONES[k]}: ${MATS[z.mat]}, ${PATS[z.pat].toLowerCase()}, ${nameOf(COLORS, z.color).toLowerCase()}`);
+  return [`Šablona: ${TEMPLATES[cfg.model].label}`, ...lines, `Nit: ${nameOf(THREADS, cfg.thread).toLowerCase()}${cfg.stripe ? ", kontrastní pruh" : ""}${cfg.piping ? ", paspule" : ""}`,
+    cfg.logoMode !== "none" && cfg.logo ? `Logo: ${LOGO[cfg.logoMode].toLowerCase()}, „${cfg.logo}“` : "", `Orientační cena: ${price()}`].filter(Boolean).join("\n");
+}
+function initPanel() {
+  swatches($("#sw-color"), COLORS, v => cfg.zones[zone].color = v);
+  swatches($("#sw-thread"), THREADS, v => cfg.thread = v);
+  $$("[data-group]").forEach(g => g.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const v = b.dataset.v, grp = g.dataset.group;
+    if (grp === "zone") return selectZone(v);
+    if (grp === "model") cfg.model = v;
+    if (grp === "mat" || grp === "pat") cfg.zones[zone][grp] = v;
+    if (grp === "logoMode") { cfg.logoMode = v; if (v !== "none") flyTo(VIEWS.seam); }
+    rebuild(grp !== "model");
+  }));
+  $("#o-stripe").onchange = e => { cfg.stripe = e.target.checked; rebuild(); };
+  $("#o-piping").onchange = e => { cfg.piping = e.target.checked; rebuild(); };
+  let t; $("#o-logo").oninput = e => { clearTimeout(t); t = setTimeout(() => { cfg.logo = e.target.value.trim(); rebuild(); }, 250); };
+  $("#views").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    $$("#views button").forEach(x => x.classList.toggle("on", x === b)); flyTo(VIEWS[b.dataset.view]);
   });
-});
-document.getElementById("opt-stripe").onchange = e => { cfg.stripe = e.target.checked; render(); };
-document.getElementById("opt-piping").onchange = e => { cfg.piping = e.target.checked; render(); };
-document.getElementById("opt-logo").oninput = e => { cfg.logo = e.target.value; render(); };
-document.getElementById("zin").onclick = () => { zoom = Math.min(1.8, zoom + .2); render(); };
-document.getElementById("zout").onclick = () => { zoom = Math.max(.8, zoom - .2); render(); };
-
-// „rotace“ tažením – v prototypu jen náklon, v ostré verzi OrbitControls v Three.js
-const stage = document.getElementById("stage");
-let dragX = null;
-stage.addEventListener("pointerdown", e => { dragX = e.clientX; });
-addEventListener("pointerup", () => { dragX = null; });
-addEventListener("pointermove", e => {
-  if (dragX === null) return;
-  rot = Math.max(-55, Math.min(55, rot + (e.clientX - dragX) * .4)); dragX = e.clientX;
-  host.querySelector("svg").style.transform = `perspective(900px) rotateY(${rot}deg) scale(${zoom})`;
-});
-
-function summaryText() {
-  const zn = { center: "Střed", bolster: "Bočnice", head: "Opěrka", shell: "Skořepina" };
-  return `${cfg.model}\n` + Object.entries(cfg.zones).map(([k, z]) => `${zn[k]}: ${MAT[z.mat].label} ${z.color}`).join("\n") +
-    `\nNit: ${cfg.thread}${cfg.stripe ? ", kontrastní pruh" : ""}${cfg.piping ? ", paspule" : ""}${cfg.logo ? `, logo „${cfg.logo}“` : ""}\nOrientačně: ${price()}`;
+  $("#export").onclick = () => {
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([JSON.stringify(cfg, null, 2)], { type: "application/json" })), download: "konfigurace-sedadla.json" });
+    a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    window.toast && toast("Konfigurace uložena");
+  };
+  $("#inquire").onclick = () => { $("#form-msg").value = summary(); $("#kontakt").scrollIntoView({ behavior: "smooth" }); };
 }
-document.getElementById("export").onclick = () => {
-  const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: "application/json" });
-  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "cars-volant-konfigurace.json" });
-  a.click(); URL.revokeObjectURL(a.href); toast("Konfigurace exportována");
-};
-document.getElementById("inquire").onclick = () => { document.getElementById("form-msg").value = summaryText(); };
-render();
 
 /* ---------- Galerie ---------- */
 const WORKS = [
-  { brand: "mercedes", name: "Mercedes-AMG GT", mat: "Nappa · diamant", after: { c: "#5a2a1a", m: "diamond", t: "#c8a46a" } },
-  { brand: "bmw", name: "BMW M4 Competition", mat: "Alcantara · pruh", after: { c: "#161616", m: "alcantara", t: "#2f6bd1", stripe: true } },
-  { brand: "audi", name: "Audi RS6", mat: "Perforovaná nappa", after: { c: "#2d3a4a", m: "perf", t: "#e8e2d6" } },
-  { brand: "veteran", name: "Mercedes 280 SL (1969)", mat: "Nappa · paspule", after: { c: "#c9b79c", m: "nappa", t: "#5a2a1a", piping: true } },
-  { brand: "bmw", name: "BMW M5", mat: "Nappa · diamant", after: { c: "#8b1e1e", m: "diamond", t: "#161616" } },
-  { brand: "mercedes", name: "Mercedes G 63", mat: "Nappa · perforace", after: { c: "#e8e2d6", m: "perf", t: "#8b1e1e" } },
+  { f: "mercedes", name: "Mercedes-AMG GT", note: "Tabáková nappa, diamant", model: "amg", z: { center: ["nappa", "diamond", "#5a3b24"], bolster: ["nappa", "plain", "#5a3b24"], head: ["nappa", "plain", "#5a3b24"], shell: ["nappa", "plain", "#1b1a19"] }, thread: "#e6dcc8", piping: true, big: true },
+  { f: "bmw", name: "BMW M4", note: "Alcantara, modrý pruh", model: "bmw", z: { center: ["alcantara", "plain", "#1b1a19"], bolster: ["nappa", "plain", "#1b1a19"], head: ["nappa", "plain", "#1b1a19"], shell: ["nappa", "plain", "#1b1a19"] }, thread: "#1f2a3a", stripe: true, stripeCol: "#2f4a78" },
+  { f: "audi", name: "Audi RS 6", note: "Perforace, krémová nit", model: "audi", z: { center: ["nappa", "perf", "#3a3936"], bolster: ["nappa", "plain", "#1b1a19"], head: ["nappa", "plain", "#1b1a19"], shell: ["nappa", "plain", "#1b1a19"] }, thread: "#e6dcc8" },
+  { f: "porsche", name: "Porsche 911", note: "Bordó, reliéfní kanály", model: "porsche", z: { center: ["nappa", "channels", "#5c1d1f"], bolster: ["nappa", "plain", "#1b1a19"], head: ["nappa", "plain", "#1b1a19"], shell: ["nappa", "plain", "#1b1a19"] }, thread: "#a8322d" },
+  { f: "veteran", name: "Mercedes 280 SL (1969)", note: "Krémová nappa, paspule", model: "amg", z: { center: ["nappa", "channels", "#cdbfa6"], bolster: ["nappa", "plain", "#cdbfa6"], head: ["nappa", "plain", "#cdbfa6"], shell: ["nappa", "plain", "#7a4a26"] }, thread: "#7a4a26", piping: true, f2: "mercedes" },
 ];
-const g = document.getElementById("gallery");
-g.innerHTML = WORKS.map(w => {
-  const a = w.after;
-  const newC = { thread: a.t, stripe: a.stripe, piping: a.piping, zones: { center: { mat: a.m, color: a.c }, bolster: { mat: "nappa", color: a.c === "#e8e2d6" || a.c === "#c9b79c" ? a.c : "#161616" }, head: { mat: "nappa", color: a.c }, shell: { mat: "nappa", color: "#1a1a1a" } } };
-  return `<article class="card" data-brand="${w.brand}">
-    <div class="pair"><div><span>Před</span>${seatSVG(wornCfg, { worn: true })}</div><div><span>Po</span>${seatSVG(newC)}</div></div>
-    <div class="meta"><strong>${w.name}</strong><em>${w.mat}</em></div></article>`;
-}).join("");
-document.getElementById("filters").addEventListener("click", e => {
-  const b = e.target.closest(".chip"); if (!b) return;
-  document.querySelectorAll("#filters .chip").forEach(x => x.classList.toggle("on", x === b));
-  g.querySelectorAll(".card").forEach(c => c.classList.toggle("hide", b.dataset.f !== "all" && c.dataset.brand !== b.dataset.f));
-});
+function workCfg(w) {
+  const zones = {}; for (const [k, [mat, pat, color]] of Object.entries(w.z)) zones[k] = { mat, pat, color };
+  return { model: w.model, thread: w.stripeCol || w.thread, stripe: !!w.stripe, piping: !!w.piping, logoMode: "none", logo: "", zones };
+}
+function initGallery() {
+  $("#gallery").innerHTML = WORKS.map((w, i) => `
+    <article class="work${w.big ? " big" : ""}" data-f="${w.f} ${w.f2 || ""}" data-i="${i}">
+      <span class="tag">Ukázka</span>
+      <div class="slot"><img class="after" alt="${w.name} po renovaci"><img class="before" alt="${w.name} před renovací"></div>
+      <div class="meta"><h3>${w.name}</h3><span class="label">${w.note}</span></div>
+    </article>`).join("");
+  $$(".work").forEach(el => el.addEventListener("click", () => el.classList.toggle("show-before")));
+  $("#filters").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    $$("#filters button").forEach(x => x.classList.toggle("on", x === b));
+    let shown = 0;
+    $$(".work").forEach(el => { const ok = b.dataset.f === "all" || el.dataset.f.split(" ").includes(b.dataset.f); el.classList.toggle("hide", !ok); shown += ok; });
+    // velká dlaždice jen když je vidět víc položek
+    $$(".work").forEach(el => el.classList.toggle("big", shown > 2 && !!WORKS[el.dataset.i].big));
+    $("#empty").style.display = shown ? "none" : "block";
+  });
+}
 
-/* ---------- Formulář ---------- */
-function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2400); }
-document.getElementById("form").onsubmit = e => { e.preventDefault(); toast("Děkujeme, ozveme se do 24 hodin."); e.target.reset(); };
+/* ---------- Materiály zblízka ---------- */
+const MACRO = [
+  { mat: "nappa", pat: "plain", color: "#7a4a26" },
+  { mat: "alcantara", pat: "plain", color: "#2c2b29" },
+  { mat: "nappa", pat: "perf", color: "#1b1a19" },
+  { mat: "nappa", pat: "diamond", color: "#5c1d1f" },
+];
+const macroCache = [];
+async function macro(i) {
+  if (!macroCache[i]) {
+    const zc = MACRO[i], g = new THREE.Group();
+    const m = new THREE.Mesh(pillow(.36, .26, .05, .02, .018), zoneMaterial(zc, panelTex(zc, { w: .36, h: .26, r: .02, thread: "#b07a45", edge: true }), false));
+    m.rotation.x = -1.05; m.position.y = .06; m.castShadow = true; g.add(m);
+    macroCache[i] = await snap(g, { w: 900, h: 900, pos: [.16, .32, .3], target: [0, .05, 0], fov: 32 });
+  }
+  return macroCache[i];
+}
+function initMaterials() {
+  $("#mat-list").addEventListener("click", async e => {
+    const b = e.target.closest(".mat-item"); if (!b) return;
+    $$(".mat-item").forEach(x => x.classList.toggle("on", x === b));
+    const slot = $("#mat-slot"); slot.classList.remove("ready");
+    fill(slot, await macro(+b.dataset.i));
+  });
+}
+
+/* ---------- Start ---------- */
+initPanel(); initGallery(); initMaterials(); syncPanel();
+try {
+  shot = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  shot.setPixelRatio(1);
+  shotScene = makeStudio(shot);
+
+  const heroCfg = clone(cfg);
+  fill($("#hero-slot"), await snap(buildSeat(heroCfg), { w: 1100, h: 1200, pos: [1.4, 1.2, 1.9], target: [0, .6, 0], fov: 27 }));
+
+  initLive(); rebuild();
+
+  const baPos = { w: 1600, h: 900, pos: [1.05, 1.0, 2.3], target: [0, .6, 0], fov: 25 };
+  const newCfg = clone(cfg); newCfg.zones.center.color = "#5a3b24"; newCfg.zones.bolster.color = "#1b1a19"; newCfg.logoMode = "embroid"; newCfg.logo = "S";
+  fill($("#ba-before"), await snap(buildSeat(WORN, { worn: true }), baPos));
+  fill($("#ba-after"), await snap(buildSeat(newCfg), baPos));
+
+  fill($("#mat-slot"), await macro(0));
+
+  for (const [i, w] of WORKS.entries()) {
+    const el = $(`.work[data-i="${i}"] .slot`), c = workCfg(w);
+    const view = { w: 900, h: 700, pos: [1.35, 1.1, 2.0], target: [0, .6, 0], fov: 27 };
+    el.querySelector(".after").src = await snap(buildSeat(c), view);
+    const wc = clone(WORN); wc.model = w.model;
+    el.querySelector(".before").src = await snap(buildSeat(wc, { worn: true }), view);
+    el.classList.add("ready");
+  }
+  for (let i = 1; i < MACRO.length; i++) await macro(i);   // předrenderovat ostatní materiály
+} catch (err) {
+  console.error(err);
+  $$(".slot:not(.ready)").forEach(fail);
+}
 </script>
 </body>
 </html>
